@@ -1,0 +1,50 @@
+version: "3.7"
+
+services:
+    # image project
+    app:
+        container_name: tueeu_app
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+
+    # nginx
+    nginx:
+        container_name: tueeu_web
+        image: nginx:1.23.2-alpine
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/:/etc/nginx/conf.d/
+        depends_on:
+            - mysql
+
+    # db mysql
+    mysql:
+        container_name: tueeu_mariadb
+        image: mariadb:10.9.3-jammy
+        restart: unless-stopped
+        environment:
+            MARIADB_DATABASE: ${DB_DATABASE}
+            MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+            MARIADB_PASSWORD: ${DB_PASSWORD}
+            MARIADB_USER: ${DB_USERNAME}
+        volumes:
+            - ./.docker/mariadb/dbdata:/var/lib/mysql
+        ports:
+            - "3306:3306"
+    cache:
+        container_name: tueeu_redis
+        image: redis:7.0-alpine
+        restart: always
+        ports:
+            - '6379:6379'
+        command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+        volumes:
+            - ./.docker/cache:/data

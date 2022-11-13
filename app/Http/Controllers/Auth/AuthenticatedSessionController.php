@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        User::where('id', Auth::id())->update(['token', md5(uniqid())]);
+        User::where('id', Auth::id())->update(['token' => md5(uniqid())]);
 
         $request->session()->regenerate();
 

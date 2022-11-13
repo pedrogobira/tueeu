@@ -19,10 +19,12 @@ return new class extends Migration
             $table->unsignedBigInteger('to_user_id');
             $table->string('chat_message');
             $table->string('message_status');
+            $table->unsignedBigInteger('chat_request_id');
             $table->timestamps();
 
-            $table->foreign('from_user_id')->on('users')->references('id');
-            $table->foreign('to_user_id')->on('users')->references('id');
+            $table->foreign('from_user_id')->references('id')->on('users');
+            $table->foreign('to_user_id')->references('id')->on('users');
+            $table->foreign('chat_request_id')->references('id')->on('chat_requests');
         });
     }
 

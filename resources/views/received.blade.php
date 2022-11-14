@@ -26,6 +26,19 @@
                             <x-textarea-input name="body" cols="50" rows="20"
                                               disabled>{{ $received->body }}</x-textarea-input>
                         </div>
+
+                        <div class="mt-4 flex justify-end">
+                            <form id="identify" method="POST" action="{{ route('chat-request.store') }}">
+                                @csrf
+                                <input type="number" name="from_user_id" value="{{ auth()->user()->id }}" hidden
+                                       required>
+                                <input type="number" name="to_user_id" value="{{ $received->author_id }}" hidden required>
+                                <input type="number" name="story_id" value="{{ $received->id }}" hidden required>
+                                <x-primary-button class="align-right" form="identify">
+                                    I identify with this
+                                </x-primary-button>
+                            </form>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -33,11 +46,3 @@
     </div>
 </x-app-layout>
 
-<script>
-    const conn = new WebSocket('ws://172.20.128.5:8090/');
-    conn.onopen = function (e) {
-        console.log('connection established');
-    }
-    conn.onmessage = function (e) {
-    }
-</script>

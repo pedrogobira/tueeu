@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatRequestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::resource('story', '\App\Http\Controllers\StoryController');
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
+    Route::post('/chat-request', [ChatRequestController::class, 'store'])->name('chat-request.store');
+    Route::view('/chat', 'chat.index');
     /*
         Route::get('/story', [StoryController::class, 'create'])->name('story.create');
         Route::post('/story', [StoryController::class, 'store'])->name('story.store');

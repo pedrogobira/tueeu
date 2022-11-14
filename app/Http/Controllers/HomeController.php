@@ -20,6 +20,10 @@ class HomeController extends Controller
             $received = Story::find(rand(1, $lastStory->id));
         }
 
+        if (!$received->canBeSent(Auth::user())) {
+            return view('received', ['received' => null]);
+        }
+
         return view('received', ['received' => $received]);
     }
 }

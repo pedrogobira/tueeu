@@ -49,6 +49,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        User::where('id', Auth::id())->update(['token' => md5(uniqid())]);
+
         return redirect(RouteServiceProvider::HOME);
     }
 }

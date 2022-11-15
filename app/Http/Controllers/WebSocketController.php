@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chat;
 use App\Models\ChatRequest;
 use App\Models\User;
 use Exception;
@@ -56,7 +57,9 @@ class WebSocketController extends Controller implements MessageComponentInterfac
             'request_load_unconnected_user' => $this->getUnconnectedUsers($data),
             'request_load_unread_notification' => $this->getUnreadNotification($data),
             'request_chat_processing' => $this->processChatRequest($data),
-            'request_connected_chat_user' => $this->getConnectedChatUsers($data)
+            'request_connected_chat_user' => $this->getConnectedChatUsers($data),
+            'request_send_message' => $this->sendMessage($data),
+            'request_chat_history' => $this->getChatHistory($data)
         };
     }
 
@@ -161,6 +164,51 @@ class WebSocketController extends Controller implements MessageComponentInterfac
         foreach ($this->clients as $client) {
             if ($client->resourceId == $senderConnectionId->connection_id) {
                 $client->send(json_encode(['data' => $subData, 'response_connected_chat_user' => true]));
+            }
+        }
+    }
+
+    private function sendMessage($data)
+    {
+        Chat::create([
+            'from_user_id' => $data->from_user_id,
+            'to_user_id' => $data->to_user_id,
+            'chat_message' => $data->message,
+            'message_status' => 'not send'
+        ]);
+
+        $receiver = User::select('connection_id', 'name')->where('id', $data->to_user_id)->first();
+        $sender = User::select('connection_id', 'name')->where('id', $data->from_user_id)->first();
+
+        foreach ($this->clients as $client) {
+            if ($client->resourceId == $receiver->connection_id
+                || $client->resourceId == $sender->connection_id) {
+                $client->send(json_encode([
+                    'message' => $data->message,
+                    'from_user_id' => $data->from_user_id,
+                    'from_user_name' => $sender->name,
+                    'to_user_id' => $data->to_user_id,
+                    'to_user_name' => $receiver->name
+                ]));
+            }
+        }
+    }
+
+    private function getChatHistory($data)
+    {
+        $chatData = Chat::where(function ($query) use ($data) {
+            $query->where('from_user_id', $data->from_user_id)
+                ->where('to_user_id', $data->to_user_id);
+        })->orWhere(function ($query) use ($data) {
+            $query->where('from_user_id', $data->to_user_id)
+                ->where('to_user_id', $data->from_user_id);
+        })->get();
+
+        $receiverConnectionId = User::select('connection_id')->where('id', $data->from_user_id)->first();
+
+        foreach ($this->clients as $client) {
+            if ($client->resourceId == $receiverConnectionId->connection_id) {
+                $client->send(json_encode(['chat_history' => $chatData]));
             }
         }
     }

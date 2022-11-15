@@ -34,7 +34,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
     Route::post('/chat-request', [ChatRequestController::class, 'store'])->name('chat-request.store');
-    Route::view('/chat', 'chat.index');
+    Route::view('/chat', 'chat.index')->name('chat.index');
     /*
         Route::get('/story', [StoryController::class, 'create'])->name('story.create');
         Route::post('/story', [StoryController::class, 'store'])->name('story.store');

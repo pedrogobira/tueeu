@@ -10,9 +10,18 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg max-w-xl mx-auto">
                 <div class="p-6 bg-white border-b border-gray-200 ">
                     @if($received == null)
-                        <h3 class="font-semibold">
-                            {{ __('Nothing to receive') }}
-                        </h3>
+                        <div>
+                            <h3 class="font-semibold">
+                                {{ __('Nothing to receive') }}
+                            </h3>
+                        </div>
+                        <div class="mt-4">
+                            <form method="get" action="{{ route('home.index') }}">
+                                <x-primary-button class="align-right">
+                                    {{ __('Search for story') }}
+                                </x-primary-button>
+                            </form>
+                        </div>
                     @else
                         <div>
                             <x-input-label for="title" :value="__('Title')"/>
@@ -28,16 +37,26 @@
                         </div>
 
                         <div class="mt-4 flex justify-end">
-                            <form id="identify" method="POST" action="{{ route('chat-request.store') }}">
-                                @csrf
-                                <input type="number" name="from_user_id" value="{{ auth()->user()->id }}" hidden
-                                       required>
-                                <input type="number" name="to_user_id" value="{{ $received->author_id }}" hidden required>
-                                <input type="number" name="story_id" value="{{ $received->id }}" hidden required>
-                                <x-primary-button class="align-right" form="identify">
-                                    I identify with this
-                                </x-primary-button>
-                            </form>
+                            <div>
+                                <form id="identify" method="POST" action="{{ route('chat-request.store') }}">
+                                    @csrf
+                                    <input type="number" name="from_user_id" value="{{ auth()->user()->id }}" hidden
+                                           required>
+                                    <input type="number" name="to_user_id" value="{{ $received->author_id }}" hidden
+                                           required>
+                                    <input type="number" name="story_id" value="{{ $received->id }}" hidden required>
+                                    <x-primary-button class="align-right" form="identify">
+                                        {{ __('I identify with this') }}
+                                    </x-primary-button>
+                                </form>
+                            </div>
+                            <div class="ml-2">
+                                <form method="get" action="{{ route('home.index') }}">
+                                    <x-primary-button class="align-right">
+                                        {{ __('Search for story') }}
+                                    </x-primary-button>
+                                </form>
+                            </div>
                         </div>
                     @endif
                 </div>

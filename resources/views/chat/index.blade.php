@@ -195,7 +195,7 @@
 `
 
         document.getElementById('chat-area').innerHTML = html;
-        document.getElementById('chat-header').innerHTML = `<div><b>{{ __('Chat with') }}${toUserName}</b></div>`;
+        document.getElementById('chat-header').innerHTML = `<div><b>{{ __('Chat with') }} ${toUserName}</b></div>`;
         to_user_id = toUserId;
         to_user_name = toUserName;
         requestChatHistory(from_user_id, to_user_id);

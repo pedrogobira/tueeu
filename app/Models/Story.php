@@ -11,12 +11,14 @@ class Story extends Model
 
     protected $fillable = ['title', 'body', 'author_id'];
 
-    public function chatRequests() {
+    public function chatRequests()
+    {
         $this->hasMany(ChatRequest::class, 'story_id', 'id');
     }
 
-    public function canBeSent(User $receiver) {
-        if($receiver->id == $this->author_id)  {
+    public function canBeSent(User $receiver)
+    {
+        if ($receiver->id == $this->author_id) {
             return false;
         }
 
@@ -24,8 +26,18 @@ class Story extends Model
             return $chatRequest->story_id;
         });
 
-        if($stories->contains($this->id)) {
-           return false;
+        if ($stories->contains($this->id)) {
+            return false;
+        }
+
+        $contacts = $receiver->fromChatRequests()->get()->map(function (ChatRequest $chatRequest) {
+            if ($chatRequest->status == 'approve') {
+                return $chatRequest->to_user_id;
+            }
+        });
+
+        if ($contacts->contains($this->author_id)) {
+            return false;
         }
 
         return true;

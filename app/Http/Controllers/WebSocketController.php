@@ -170,6 +170,10 @@ class WebSocketController extends Controller implements MessageComponentInterfac
 
     private function sendMessage($data)
     {
+        if($data->message == '' || $data->message == null)  {
+            return null;
+        }
+
         Chat::create([
             'from_user_id' => $data->from_user_id,
             'to_user_id' => $data->to_user_id,

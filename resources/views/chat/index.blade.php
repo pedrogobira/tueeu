@@ -136,7 +136,7 @@
             for (let count = 0; count < data.data.length; count++) {
                 html += `
                     <li class="">
-                        <button onclick="makeChatArea(${data.data[count].id},'${data.data[count].name}')">${data.data[count].name}</button>
+                        <button class="hover:underline" onclick="makeChatArea(${data.data[count].id},'${data.data[count].name}')">${data.data[count].name}</button>
                     </li>
                     `;
             }
@@ -156,11 +156,11 @@
                             <span>${data.data[count].name}</span>
                         </div>
                         <div>
-                            <button onclick="requestChatProcessing(${data.data[count].id}, ${data.data[count].from_user_id}, ${data.data[count].to_user_id}, 'approve')">
+                            <button class="hover:underline" onclick="requestChatProcessing(${data.data[count].id}, ${data.data[count].from_user_id}, ${data.data[count].to_user_id}, 'approve')">
                                 Approve
                             </button>
                                or
-                            <button onclick="requestChatProcessing(${data.data[count].id}, ${data.data[count].from_user_id}, ${data.data[count].to_user_id}, 'reject')">
+                            <button class="hover:underline" onclick="requestChatProcessing(${data.data[count].id}, ${data.data[count].from_user_id}, ${data.data[count].to_user_id}, 'reject')">
                                 Refuse
                             </button>
                         </div>
@@ -188,11 +188,14 @@
                 <x-primary-button class="m-2" id="send-button" onclick="sendMessage()">
                     {{ __('Submit') }}
         </x-primary-button>
+                <a href="" class="m-2 hover:underline">
+                    {{ __('Create Cause') }}
+                </a>
  </div>
 `
 
         document.getElementById('chat-area').innerHTML = html;
-        document.getElementById('chat-header').innerHTML = `<div><b>{{ __('Chat with') }} ${toUserName}</b></div>`;
+        document.getElementById('chat-header').innerHTML = `<div><b>{{ __('Chat with') }}${toUserName}</b></div>`;
         to_user_id = toUserId;
         to_user_name = toUserName;
         requestChatHistory(from_user_id, to_user_id);

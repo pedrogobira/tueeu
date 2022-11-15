@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg max-w-2xl mx-auto">
                 <div class="p-6 bg-white border-b border-gray-200 flex">
-                    <div class="p-2 border-r border-indigo-800 flex-2">
+                    <div class="p-2 border-r border-grey-800 flex-2">
                         <ul id="notifications">
                         </ul>
                         <ul id="contacts">
@@ -46,16 +46,23 @@
     conn.onopen = function (e) {
         console.log('connection established');
         requestUnreadNotification({{ auth()->user()->id }});
+        requestConnectedChatUser({{ auth()->user()->id }});
     }
     conn.onmessage = function (e) {
         let data = JSON.parse(e.data);
 
+        console.log(data);
         if (data.response_load_unread_notification) {
             loadUnreadNotifications(data);
         }
 
         if (data.response_chat_processing) {
             loadUnreadNotifications(data);
+            requestConnectedChatUser({{ auth()->user()->id }});
+        }
+
+        if (data.response_connected_chat_user) {
+            loadConnectedUsers(data);
         }
     }
 
@@ -80,7 +87,33 @@
         conn.send(JSON.stringify(data));
     }
 
+    function requestConnectedChatUser(fromUserId) {
+        let data = {
+            from_user_id: fromUserId,
+            type: 'request_connected_chat_user'
+        }
+
+        conn.send(JSON.stringify(data));
+    }
+
+    function loadConnectedUsers(data) {
+        let html = '';
+        if (data.data.length > 0) {
+            for (let count = 0; count < data.data.length; count++) {
+                html += `
+                    <li class="">
+                        <a href="">${data.data[count].name}</a>
+                    </li>
+                    `;
+            }
+        } else {
+            html = 'No contacts';
+        }
+        document.getElementById('contacts').innerHTML = html;
+    }
+
     function loadUnreadNotifications(data) {
+        console.log(data);
         let html = '';
         if (data.data.length > 0) {
             for (let count = 0; count < data.data.length; count++) {

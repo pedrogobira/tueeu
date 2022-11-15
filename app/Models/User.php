@@ -47,6 +47,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function chatRequests()
+    {
+        return ChatRequest::where('from_user_id', $this->id)->orWhere('to_user_id', $this->id)->get();
+    }
+
     public function fromChatRequests() : HasMany {
         return $this->hasMany(ChatRequest::class, 'from_user_id', 'id');
     }

@@ -55,7 +55,8 @@ class WebSocketController extends Controller implements MessageComponentInterfac
         match ($data->type) {
             'request_load_unconnected_user' => $this->getUnconnectedUsers($data),
             'request_load_unread_notification' => $this->getUnreadNotification($data),
-            'request_chat_processing' => $this->processChatRequest($data)
+            'request_chat_processing' => $this->processChatRequest($data),
+            'request_connected_chat_user' => $this->getConnectedChatUsers($data)
         };
     }
 
@@ -126,6 +127,40 @@ class WebSocketController extends Controller implements MessageComponentInterfac
                 $sendData['response_chat_processing'] = true;
                 $sendData['data'] = $data->to_user_id;
                 $client->send(json_encode($sendData));
+            }
+        }
+    }
+
+    private function getConnectedChatUsers($data)
+    {
+        $firstCondition = ['from_user_id' => $data->from_user_id, 'to_user_id' => $data->from_user_id];
+
+        $chatRequests = ChatRequest::select('from_user_id', 'to_user_id')
+            ->orWhere($firstCondition)
+            ->where('status', 'approve')
+            ->get();
+
+        $subData = [];
+        foreach ($chatRequests as $chatRequest) {
+            if ($chatRequest->from_user_id != $data->from_user_id) {
+                $userId = $chatRequest->from_user_id;
+            } else {
+                $userId = $chatRequest->to_user_id;
+            }
+
+            $user = User::select('id', 'name')->where('id', $userId)->first();
+
+            $subData[] = [
+                'id' => $user->id,
+                'name' => $user->name
+            ];
+        }
+
+        $senderConnectionId = User::select('connection_id')->where('id', $data->from_user_id)->first();
+
+        foreach ($this->clients as $client) {
+            if ($client->resourceId == $senderConnectionId->connection_id) {
+                $client->send(json_encode(['data' => $subData, 'response_connected_chat_user' => true]));
             }
         }
     }

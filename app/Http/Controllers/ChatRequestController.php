@@ -27,6 +27,6 @@ class ChatRequestController extends Controller
             'status' => 'pending'
         ]);
 
-        return view('chat.index');
+        return redirect()->route('chat.index');
     }
 }

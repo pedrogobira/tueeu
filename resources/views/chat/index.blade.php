@@ -76,6 +76,7 @@
 
         if(data.response_cause_processing) {
             requestChatHistory(from_user_id, to_user_id);
+            showResponseOfCauseRequest();
         }
     }
 
@@ -272,7 +273,7 @@
             if (data.chat_history[count].from_user_id == from_user_id) {
                 if(data.chat_history[count].cause_request_id) {
                     html += `
-                        <div class="p-4 bg-gray-200 rounded-xl">
+                        <div class="p-4 bg-gray-200 rounded-xl cause-request">
                             <p class="font-semibold">{{ __('you') }}</p>
                             <p>${data.chat_history[count].chat_message}</p>
                             <p class="font-bold">{{ __('You send a cause request') }}</p>
@@ -289,7 +290,7 @@
             } else {
                 if(data.chat_history[count].cause_request_id) {
                     html += `
-                        <div class="p-4 bg-gray-200 rounded-xl">
+                        <div class="p-4 bg-gray-200 rounded-xl cause-request">
                             <p class="font-semibold">${to_user_name}</p>
                             <p>${data.chat_history[count].chat_message}</p>
                             <button class="hover:underline" onclick="requestCauseProcessing(${data.chat_history[count].cause_request_id}, ${data.chat_history[count].from_user_id}, ${data.chat_history[count].to_user_id}, 'approve')">
@@ -318,7 +319,7 @@
         let html = '';
         if (data.from_user_id == from_user_id) {
             html += `
-                        <div class="p-4 bg-gray-200 rounded-xl">
+                        <div class="p-4 bg-gray-200 rounded-xl cause-request">
                             <p class="font-semibold">{{ __('you') }}</p>
                             <p>${data.message}</p>
                             <p class="font-bold">{{ __('You send a cause request') }}</p>
@@ -326,7 +327,7 @@
                     `
         } else {
             html += `
-                        <div class="p-4 bg-gray-200 rounded-xl">
+                        <div class="p-4 bg-gray-200 rounded-xl cause-request">
                             <p class="font-semibold">${data.from_user_name}</p>
                             <p>${data.message}</p>
                             <button class="hover:underline" onclick="requestCauseProcessing(${data.id}, ${data.from_user_id}, ${data.to_user_id}, 'approve')">
@@ -340,6 +341,15 @@
         if (html != '') {
             let previousChat = document.getElementById('chat-messages');
             previousChat.innerHTML += html;
+        }
+    }
+
+    function showResponseOfCauseRequest() {
+        const messages = document.querySelectorAll('.cause-request');
+        console.log(messages);
+        for (const message of messages) {
+            console.log(message);
+            message.innerHTML = '{{ __('Request accepted') }}'
         }
     }
 </script>

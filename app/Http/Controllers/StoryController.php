@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStoryRequest;
-use App\Http\Requests\UpdateStoryRequest;
+use App\Http\Requests\UpdateCauseRequest;
 use App\Models\Story;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,20 +38,5 @@ class StoryController extends Controller
     public function show(Story $story)
     {
         return view('story.show', ['story' => $story]);
-    }
-
-    public function edit(Story $story)
-    {
-        //
-    }
-
-    public function update(UpdateStoryRequest $request, Story $story)
-    {
-        //
-    }
-
-    public function destroy(Story $story)
-    {
-        //
     }
 }

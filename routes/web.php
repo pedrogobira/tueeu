@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\CauseController;
 use App\Http\Controllers\ChatRequestController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +37,12 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::post('/chat-request', [ChatRequestController::class, 'store'])->name('chat-request.store');
     Route::view('/chat', 'chat.index')->name('chat.index');
+    Route::resource('cause', '\App\Http\Controllers\CauseController');
+    Route::get('/cause/{id}/update', [CauseController::class, 'updateView'])->name('cause.updateView');
+    Route::post('/cause/{id}/update', [CauseController::class, 'customUpdate'])->name('cause.custom-update');
+
+    Route::get('/cause/{id}/post', [PostController::class, 'create'])->name('post.create');
+    Route::post('/cause/{id}/post', [PostController::class, 'store'])->name('post.store');
     /*
         Route::get('/story', [StoryController::class, 'create'])->name('story.create');
         Route::post('/story', [StoryController::class, 'store'])->name('story.store');

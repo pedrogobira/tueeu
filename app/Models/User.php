@@ -70,7 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return ChatRequest::where('from_user_id', $this->id)->orWhere('to_user_id', $this->id)->get();
     }
 
-    public function members()
+    public function members(): HasMany
     {
         return $this->hasMany(Member::class, 'user_id', 'id');
     }

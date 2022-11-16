@@ -21,6 +21,12 @@
                     <x-nav-link :href="route('story.index')" :active="request()->routeIs('story.index')">
                         {{ __('Your stories') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')">
+                        {{ __('Chats') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('cause.index')" :active="request()->routeIs('cause.index')">
+                        {{ __('Causes') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -88,6 +94,12 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('story.index')" :active="request()->routeIs('story.index')">
                 {{ __('Your stories') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')">
+                {{ __('Chats') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('cause.index')" :active="request()->routeIs('cause.index')">
+                {{ __('Causes') }}
             </x-responsive-nav-link>
         </div>
 

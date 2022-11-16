@@ -9,5 +9,10 @@ class Chat extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['from_user_id', 'to_user_id', 'chat_message', 'message_status'];
+    protected $fillable = ['from_user_id', 'to_user_id', 'chat_message', 'message_status', 'cause_request_id'];
+
+    public function causeRequest()
+    {
+        return $this->hasOne(CauseRequest::class, 'id', 'cause_request_id');
+    }
 }

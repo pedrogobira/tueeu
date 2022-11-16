@@ -47,12 +47,31 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function fromChatRequests(): HasMany
+    {
+        return $this->hasMany(ChatRequest::class, 'from_user_id', 'id');
+    }
+
+    public function getStoryByContact(User $contact)
+    {
+        $chatRequest = $this->chatRequests()
+            ->filter(function (ChatRequest $chatRequest) use ($contact) {
+                if ($chatRequest->from_user_id == $contact->id
+                    || $chatRequest->to_user_id == $contact->id) {
+                    return $chatRequest;
+                }
+            })->first();
+
+        return $chatRequest->story;
+    }
+
     public function chatRequests()
     {
         return ChatRequest::where('from_user_id', $this->id)->orWhere('to_user_id', $this->id)->get();
     }
 
-    public function fromChatRequests() : HasMany {
-        return $this->hasMany(ChatRequest::class, 'from_user_id', 'id');
+    public function members()
+    {
+        return $this->hasMany(Member::class, 'user_id', 'id');
     }
 }

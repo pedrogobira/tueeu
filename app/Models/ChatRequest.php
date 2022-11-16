@@ -15,4 +15,8 @@ class ChatRequest extends Model
     {
         return $this->hasOne(User::class, 'id', 'from_user_id');
     }
+
+    public function story() {
+        return $this->hasOne(Story::class, 'id', 'story_id');
+    }
 }

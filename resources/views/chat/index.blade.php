@@ -67,7 +67,17 @@
         }
 
         if (data.chat_history) {
+            console.log(data);
             loadChatHistory(data);
+        }
+
+        if (data.response_create_cause_request) {
+            getCauseRequest(data);
+        }
+
+        if(data.response_cause_processing) {
+            console.log(data);
+            requestChatHistory(from_user_id, to_user_id);
         }
     }
 
@@ -128,6 +138,34 @@
         conn.send(JSON.stringify(data));
     }
 
+    function requestCreateCause() {
+        document.getElementById('create-cause-button').disabled = true;
+        const message = document.getElementById('message').value.trim();
+
+        const data = {
+            'message': message,
+            'from_user_id': from_user_id,
+            'to_user_id': to_user_id,
+            'type': 'request_create_cause'
+        };
+
+        conn.send(JSON.stringify(data));
+        document.getElementById('message').value = '';
+        document.getElementById('send-button').disabled = false;
+    }
+
+    function requestCauseProcessing(causeRequestId, fromUserId, toUserId, action) {
+        let data = {
+            cause_request_id: causeRequestId,
+            from_user_id: fromUserId,
+            to_user_id: toUserId,
+            action: action,
+            type: 'request_cause_processing'
+        }
+
+        conn.send(JSON.stringify(data));
+    }
+
     /* FOR RESPONSES */
 
     function loadConnectedUsers(data) {
@@ -157,11 +195,11 @@
                         </div>
                         <div>
                             <button class="hover:underline" onclick="requestChatProcessing(${data.data[count].id}, ${data.data[count].from_user_id}, ${data.data[count].to_user_id}, 'approve')">
-                                Approve
+                                <b>Approve</b>
                             </button>
                                or
                             <button class="hover:underline" onclick="requestChatProcessing(${data.data[count].id}, ${data.data[count].from_user_id}, ${data.data[count].to_user_id}, 'reject')">
-                                Refuse
+                                <b>Refuse</b>
                             </button>
                         </div>
                     </li>
@@ -188,10 +226,10 @@
                 <x-primary-button class="m-2" id="send-button" onclick="sendMessage()">
                     {{ __('Submit') }}
         </x-primary-button>
-                <a href="" class="m-2 hover:underline">
-                    {{ __('Create Cause') }}
-                </a>
- </div>
+        <a class="m-2 hover:underline" style="cursor:pointer" id="create-cause-button" onclick="requestCreateCause()">
+{{ __('Create cause') }}
+        </a>
+</div>
 `
 
         document.getElementById('chat-area').innerHTML = html;
@@ -233,25 +271,76 @@
         let html = '';
         for (let count = 0; count < data.chat_history.length; count++) {
             if (data.chat_history[count].from_user_id == from_user_id) {
-                html += `
-                <div class="p-4 bg-gray-200 rounded-xl">
-                    <p class="font-semibold">{{ __('You') }}</p>
-                    <p>${data.chat_history[count].chat_message}</p>
-                </div>
-                `
+                if(data.chat_history[count].cause_request_id) {
+                    html += `
+                        <div class="p-4 bg-gray-200 rounded-xl">
+                            <p class="font-semibold">{{ __('you') }}</p>
+                            <p>${data.chat_history[count].chat_message}</p>
+                            <p class="font-bold">{{ __('You send a cause request') }}</p>
+                        </div>
+                    `
+                } else {
+                    html += `
+                        <div class="p-4 bg-gray-200 rounded-xl">
+                            <p class="font-semibold">{{ __('You') }}</p>
+                            <p>${data.chat_history[count].chat_message}</p>
+                        </div>
+                    `
+                }
             } else {
-                html += `
-                <div class="p-4 bg-gray-200 rounded-xl">
-                    <p class="font-semibold">${to_user_name}</p>
-                    <p>${data.chat_history[count].chat_message}</p>
-                </div>
-                `
+                if(data.chat_history[count].cause_request_id) {
+                    html += `
+                        <div class="p-4 bg-gray-200 rounded-xl">
+                            <p class="font-semibold">${to_user_name}</p>
+                            <p>${data.chat_history[count].chat_message}</p>
+                            <button class="hover:underline" onclick="requestCauseProcessing(${data.chat_history[count].cause_request_id}, ${data.chat_history[count].from_user_id}, ${data.chat_history[count].to_user_id}, 'approve')">
+                                <b>Approve?</b>
+                            </button>
+                        </div>
+                    `
+                } else {
+                    html += `
+                        <div class="p-4 bg-gray-200 rounded-xl">
+                            <p class="font-semibold">${to_user_name}</p>
+                            <p>${data.chat_history[count].chat_message}</p>
+                        </div>
+                    `
+                }
             }
 
             if (html != '') {
                 document.getElementById('chat-history').innerHTML = html;
                 scrollChat();
             }
+        }
+    }
+
+    function getCauseRequest(data) {
+        let html = '';
+        if (data.from_user_id == from_user_id) {
+            html += `
+                        <div class="p-4 bg-gray-200 rounded-xl">
+                            <p class="font-semibold">{{ __('you') }}</p>
+                            <p>${data.message}</p>
+                            <p class="font-bold">{{ __('You send a cause request') }}</p>
+                        </div>
+                    `
+        } else {
+            html += `
+                        <div class="p-4 bg-gray-200 rounded-xl">
+                            <p class="font-semibold">${data.from_user_name}</p>
+                            <p>${data.message}</p>
+                            <button class="hover:underline" onclick="requestCauseProcessing(${data.id}, ${data.from_user_id}, ${data.to_user_id}, 'approve')">
+                                <b>Approve</b>
+                            </button>
+                            cause request
+        </div>
+`
+        }
+
+        if (html != '') {
+            let previousChat = document.getElementById('chat-messages');
+            previousChat.innerHTML += html;
         }
     }
 </script>

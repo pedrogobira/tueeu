@@ -67,7 +67,6 @@
         }
 
         if (data.chat_history) {
-            console.log(data);
             loadChatHistory(data);
         }
 
@@ -76,7 +75,6 @@
         }
 
         if(data.response_cause_processing) {
-            console.log(data);
             requestChatHistory(from_user_id, to_user_id);
         }
     }
@@ -171,7 +169,7 @@
     function loadConnectedUsers(data) {
         let html = '';
         if (data.data.length > 0) {
-            for (let count = 0; count < data.data.length; count++) {
+            for (let count in data.data) {
                 html += `
                     <li class="">
                         <button class="hover:underline" onclick="makeChatArea(${data.data[count].id},'${data.data[count].name}')">${data.data[count].name}</button>
@@ -187,7 +185,7 @@
     function loadUnreadNotifications(data) {
         let html = '';
         if (data.data.length > 0) {
-            for (let count = 0; count < data.data.length; count++) {
+            for (let count in data.data) {
                 html += `
                     <li class="">
                         <div>
@@ -216,7 +214,7 @@
         <div class="mx-4 lg:mx-auto w-full p-4 bg-white rounded-xl" style="overflow-y: scroll; height:600px;" id="chat">
             <div class="space-y-3" id="chat-history">
             </div>
-            <div class="space-y-3" id="chat-messages">
+            <div class="mt-3 space-y-3" id="chat-messages">
             </div>
         </div>
 
@@ -269,7 +267,8 @@
 
     function loadChatHistory(data) {
         let html = '';
-        for (let count = 0; count < data.chat_history.length; count++) {
+        console.log(data);
+        for (let count in data.chat_history) {
             if (data.chat_history[count].from_user_id == from_user_id) {
                 if(data.chat_history[count].cause_request_id) {
                     html += `
